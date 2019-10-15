@@ -1,0 +1,85 @@
+Sintaxis y explicación de las Directivas utilizadas en C (o c++) para poder enlazar con lenguaje ensamblador, la ejecución del procedimiento.
+	Sintaxis
+	Comentarios
+	extern short moo(short a){
+		 return a *2;
+	}
+
+
+DIRECTIVAS
+	extrn _moo:near 
+	call _moo
+
+	Estas directivas son necesarias para que se reconozca la relación entre Ensamblador y C.
+
+
+Sintaxis y explicación de las Directivas utilizadas en ensamblador para llamar una función de C ( o c++).
+
+
+Sintaxis
+Comentarios
+extrn _moo:near		; indica que la función es foránea
+	pila segment para stack 'stack'		;inicia el segmento de pila
+	
+	DW 1000 DUP (?)		; Se define una pila de 1000 posiciones.
+	
+	pila ends		; Termina el segmento de pila.
+	datos segment para public 'data'	; Inicia el segmento de datos
+	
+	datos ends		; Termina segmento de Datos
+	extra segment para public 'data'	; Comienza segmento de Extra.
+	
+	extra ends	; Termina segmento de Extra.
+		assume cs:codigo, ds:datos, es:extra,ss:pila	
+	codigo segment para public 'code'	; Inicia segmento de código.
+		public main	; Se declara público el símbolo main.
+	main proc far	; Inicia el procedimiento el cual en este caso es FAR por que será usado por otro programa.
+		push ds		;Obligatoria
+		mov ax,0	;Obligatoria
+		push ax		;Obligatoria
+		mov ax,datos	;Obligatoria
+		mov ds,ax	;Obligatoria
+		mov ax,extra	;Obligatoria
+		mov es,ax	;Obligatoria
+        
+        mov cx,4	;mueve el valor del numero que se desea multiplicar a cx
+        push cx		;inserta en la pila
+        call _moo	;se hace el llamado a la función de C
+        add sp,2	;se suma al tope de la pila para que el valor de salida que de disponible
+
+        mov dx,ax	; cambio de valor en el registro, es necesario para imprimir una cadena.
+        mov dh,0	;se limpia la parte alta de dx para que no afecte la impresión
+        add dl,30h	;se suma 30h a dl para imprimir el valor correcto de la operación efectuada 
+        mov ah,2	;Se hace uso de la interrupción 21H
+        int 21h
+		
+		ret
+	main endp	;Termina el procedimiento proce
+	
+	codigo ends	;Termina el segmento de codigo
+			end main
+
+
+DIRECTIVAS
+
+	CODIGO SEGMENT PARA PUBLIC 'CODE'	
+	PUBLIC main
+		 main PROC FAR
+	main ENDP
+	 CODIGO ENDS
+	 END main
+	Estas directivas son necesarias para que el compilador de C tenga relación .asm.
+
+Sintaxis de compilación de cada programa fuente.
+	Sintaxis de compilación del Programa en Ensamblador:
+	El .asm se compilo con tasm U4A7PPE.
+	NOTA: Esto te genera el archivo objeto.
+
+	Sintaxis de compilación del Programa en C:
+	El .c se compilo con tcc U4A7FC
+	NOTA: Esto te genera el archivo objeto.
+
+
+Sintaxis de encadenar los programas objeto para crear el ejecutable.
+	Sintaxis para encadena:
+	tlink U4A7PPE + U4A7FC;

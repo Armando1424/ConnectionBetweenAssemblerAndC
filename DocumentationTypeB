@@ -1,0 +1,144 @@
+Sintaxis y explicación de las Directivas utilizadas en C (o c++) para poder enlazar con lenguaje ensamblador,  la ejecución del procedimiento.
+	Sintaxis; Comentarios
+	extern _proce();Se especifica que hara referencia al procedimiento proce() el cual es externo a este programa.
+	main()	;Se define el método main
+	{;Abrir corchetes del método main
+		_proce();Se llama al procedimiento proce() del programa en ensamblador
+		return 0;El método regresa 0
+	};Cerrar corchetes de método main
+
+
+DIRECTIVAS
+	extern _proce();
+	_proce();
+
+	Estas directivas son necesarias para que se reconozca la relación entre Ensamblador y C.
+
+
+Sintaxis y explicación de las Directivas utilizadas en ensamblador para que el procedimiento pueda ser invocado desde C ( o c++).
+
+
+	Sintaxis; Comentarios
+	PILA SEGMENT PARA STACK 'STACK'	; inicia el segmento de pila.
+	 DB 1000 DUP(?)	; Se define una pila de 1000 posiciones.
+	PILA ENDS	; Termina el segmento de pila.
+	DATOS SEGMENT PARA PUBLIC 'DATA'	; Inicia el segmento de datos
+	a1 DB "INSTITUTO TECNOLOGICO DE CUIDAD GUZMAN$"	; Se agrega una impresión.
+	a2 DB "Trabajo Unidad 4 $"	; Se agrega una impresión.
+	a3 DB "INTEGRANTES: $"	; Se agrega una impresión.
+	a4 DB "Elizabeth Saavedra Marcial $"	; Se agrega una impresión.
+	a5 DB "Josè Valdovinos Vega $"	; Se agrega una impresión.
+	a6 DB "Nahani Contreras Jacobo $"	; Se agrega una impresión.
+	DATOS ENDS	; Termina segmento de Datos
+	EXTRA SEGMENT PARA PUBLIC 'DATA'	; Comienza segmento de Extra.
+	EXTRA ENDS	; Termina segmento de Extra.
+
+	_CODIGO SEGMENT PARA PUBLIC 'CODE'	; Inicia segmento de código.
+	PUBLIC _proce  ; Se declara público el símbolo proce.
+		 _proce PROC FAR	; Inicia el procedimiento el cual en este caso es FAR por que será usado por otro programa.
+			ASSUME CS:_CODIGO, DS:DATOS, SS:PILA, ES:EXTRA
+				PUSH DS		;Obligatoria
+				MOV AX,00	;Obligatoria
+				PUSH AX		;Obligatoria
+				MOV AX,DATOS	;Obligatoria
+				MOV DS,AX	;Obligatoria
+				MOV AX,EXTRA	;Obligatoria
+				MOV ES,AX	;Obligatoria
+				;-------------limpiamos pantalla
+				mov al,0;cambio de valor en el registro y es necesario para limpiar pantalla
+				mov ch,0;se define que comenzara desde renglón 0 en la esquina superior derecha
+				mov cl,0;se define que comenzara desde columna 0 en la esquina superior derecha
+				mov dh,24;se define que llegara hasta renglón 24 en la esquina inferior derecha
+				mov dl,79;se define que llegara hasta columna 79 en la esquina inferior derecha
+				mov bh,7;cambio de valor en el registro y es necesario para limpiar pantalla
+				mov ah,6;cambio de valor en el registro y es necesario para limpiar pantalla
+				int 10h ;Se hace uso de la interrupción 10H
+				;--- las demás impresiones
+				mov ah,2; Cambio de valor en el registro, es necesario para mover el cursor.
+				mov dh,2;fila
+				mov dl,20;columna
+				mov bh,0 ; Cambio de valor en el registro, es necesario para mover el cursor.
+				int 10h;Se hace uso de la interrupción 10H
+				lea dx,a1;se lee la cadena a1 que se definió en el segmento de datos 
+				mov ah,9; cambio de valor en el registro, es necesario para imprimir una cadena.
+				INT 21h;Se hace uso de la interrupción 21H
+
+				
+				mov ah,2; cambio de valor en el registro, es necesario para mover el cursor.
+				mov dh,3 ;fila
+				mov dl,30;columna
+				mov bh,0 ;cambio de valor en el registro, es necesario para mover el cursor.
+				int 10h;Se hace uso de la interrupción 10H
+
+				lea dx,a2;se lee la cadena a2 que se definió en el segmento de datos
+				mov ah,9;cambio de valor en el registro, es necesario para imprimir una cadena.
+				INT 21h;Se hace uso de la interrupción 21H
+				
+				mov ah,2;cambio de valor en el registro, es necesario para mover el cursor.
+				mov dh,5;fila
+				mov dl,30 ;columna
+				mov bh,0 ;cambio de valor en el registro, es necesario para mover el cursor.
+				int 10h;Se hace uso de la interrupción 10H
+
+				lea dx,a3;se lee la cadena a3 que se definió en el segmento de datos
+				mov ah,9; cambio de valor en el registro, es necesario para imprimir una cadena.
+				INT 21h ;Se hace uso de la interrupción 21H
+				
+				mov ah,2; cambio de valor en el registro, es necesario para mover el cursor.
+				mov dh,6;fila
+				mov dl,30;columna
+				mov bh,0 ;cambio de valor en el registro, es necesario para mover el cursor.
+				int 10h;Se hace uso de la interrupción 10H
+
+				lea dx,a4;se lee la cadena a4 que se definió en el segmento de datos
+				mov ah,9;cambio de valor en el registro, es necesario para imprimir una cadena.
+				INT 21h;Se hace uso de la interrupción 21H
+				
+				mov ah,2; cambio de valor en el registro, es necesario para mover el cursor.
+				mov dh,7;fila
+				mov dl,30;columna
+				mov bh,0 ;cambio de valor en el registro, es necesario para mover el cursor.
+				int 10h;Se hace uso de la interrupción 10H
+
+				lea dx,a5;se lee la cadena a5 que se definió en el segmento de datos
+				mov ah,9;cambio de valor en el registro, es necesario para imprimir una cadena.
+				INT 21h;Se hace uso de la interrupción 21H
+				
+				mov ah,2; cambio de valor en el registro, es necesario para mover el cursor.
+				mov dh,8;fila
+				mov dl,30 ;columna
+				mov bh,0 ; cambio de valor en el registro, es necesario para mover el cursor.
+				int 10h;Se hace uso de la interrupción 10H
+
+				lea dx,a6;se lee la cadena a6 que se definió en el segmento de datos
+				mov ah,9;cambio de valor en el registro, es necesario para imprimir una cadena.
+				INT 21h;Se hace uso de la interrupción 21H
+				RET
+		_proce ENDP;Termina el procedimiento proce
+	 _CODIGO ENDS;Termina el segmento de codigo
+
+	 END _proce
+
+DIRECTIVAS
+
+	_CODIGO SEGMENT PARA PUBLIC 'CODE'	
+	PUBLIC _proce  
+		 _proce PROC FAR
+	_proce ENDP
+	 _CODIGO ENDS
+	 END _proce
+	Estas directivas son necesarias para que el compilador de C tenga relación .asm.
+
+Sintaxis de compilación de cada programa fuente.
+	Sintaxis de compilación del Programa en Ensamblador:
+	El .asm se compilo con tasm U4A7PRE.
+	NOTA: Esto te genera el archivo objeto.
+
+	Sintaxis de compilación del Programa en C:
+	El .cpp se compilo con tcc U4ATPPC
+	NOTA: Esto te genera el archivo objeto.
+
+
+Sintaxis de encadenar los programas objeto para crear el ejecutable.
+	Sintaxis para encadena:
+	tlink u4A7pre+u4A7pcc;
